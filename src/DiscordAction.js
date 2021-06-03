@@ -27,9 +27,10 @@ class DiscordAction{
      * @param {string} option youtube/poker/betrayal/fishing/chess or custom application ID
      */
     createInvite = async (voiceChannelId, option) => {
+        let code = ''
         let appid = apps[option] || option;
         try{
-            fetch(`https://discord.com/api/v8/channels/${voiceChannelId}/invites`, {
+            await fetch(`https://discord.com/api/v8/channels/${voiceChannelId}/invites`, {
                 method: 'post',
                 body: JSON.stringify({
                     max_age: 86400,
@@ -44,14 +45,16 @@ class DiscordAction{
                     'Content-Type': 'application/json'
                 }
             }).then(res => res.json()).then(inv => {
+                console.log(inv.errors.target_application_id._errors);
                 if(inv.error || !inv.code){
                     throw new Error(`An error has occured`)
                 }
-                return `https://discord.com/invite/${inv.code}`;
+                code = `https://discord.com/invite/${inv.code}`;
             })
         }catch(e){
             throw new Error(e);
         }
+        return code;
     }
 }
 module.exports = DiscordAction;
